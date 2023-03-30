@@ -1,11 +1,14 @@
 import pyshark
 import os
+import matplotlib as plt
 
 DNS_Resolved = []
 DNS_ResolvedTime = []
 DNS_RequestsType = {1: 0, 28: 0}
 QUIC_Versions = {}
 tempDNS = []
+countA = 0
+countAAAA = 0
 
 dirc = "Packets/Edurom"
 
@@ -18,6 +21,10 @@ for filename in os.listdir(dirc):
         i = 1
         for packet in cap:
             if 'DNS' in packet:
+                if packet.dns.qry_type == '1':
+                    countA += 1
+                elif packet.dns.qry_type == '28':
+                    countAAAA += 1
                 if str(packet.dns.flags) == "0x8180":
                     DNS_ResolvedTime.append(packet.frame_info.time_relative) # (y a aussi time_epoch et time)
                     if str(packet.dns.qry_name) not in DNS_Resolved:
@@ -41,7 +48,8 @@ for filename in os.listdir(dirc):
             i += 1
 
 
-
+print("A:",countA)
+print("AAAA: ",countAAAA)
 print("Resolved: ", len(DNS_ResolvedTime))
 print(DNS_Resolved)
 print(DNS_RequestsType)
