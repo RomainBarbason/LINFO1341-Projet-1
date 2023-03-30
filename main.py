@@ -1,11 +1,14 @@
 import pyshark
 import os
+import matplotlib.pyplot as plt
 
 DNS_Resolved = []
 DNS_ResolvedTime = []
 DNS_RequestsType = {1: 0, 28: 0}
 QUIC_Versions = {}
 tempDNS = []
+TransportProtocolType = {"UDP": 0, "TCP": 0}
+tempTransport = []
 
 dirc = "Packets/Edurom"
 
@@ -38,14 +41,36 @@ for filename in os.listdir(dirc):
                         QUIC_Versions.update({str(packet.quic.version): QUIC_Versions.get(str(packet.quic.version)) + 1})
                     else:
                         QUIC_Versions.update({str(packet.quic.version): 1})
+            if 'UDP' in packet:
+                TransportProtocolType.update({'UDP': TransportProtocolType.get('UDP') + 1})
+            if 'TCP' in packet:
+                print(packet)
+                TransportProtocolType.update({'TCP': TransportProtocolType.get('TCP') + 1})
             i += 1
 
+googleDomains = 0
+otherDomains = 0
+for elem in DNS_Resolved:
+    if "google" in str(elem):
+        googleDomains += 1
+    else:
+        otherDomains += 1
+        print(elem)
 
 
-print("Resolved: ", len(DNS_ResolvedTime))
+labels = 'Google', 'Autres'
+sizes = [googleDomains,otherDomains]
+
+fig, ax = plt.subplots()
+ax.pie(sizes, labels=labels, autopct='%1.1f%%')
+#plt.savefig('graph1.png', bbox_inches='tight')
+#plt.show()
+
+print("Resolved: ", len(DNS_Resolved))
 print(DNS_Resolved)
 print(DNS_RequestsType)
 print(QUIC_Versions)
+print(TransportProtocolType)
 
 """
 Questions pour réseaux(jme refere au rapport):
