@@ -9,6 +9,10 @@ QUIC_Versions = {}
 tempDNS = []
 TransportProtocolType = {"UDP": 0, "TCP": 0}
 tempTransport = []
+countA = 0
+countAAAA = 0
+TransportProtocolType = {"UDP": 0, "TCP": 0}
+tempTransport = []
 
 dirc = "Packets/Edurom"
 
@@ -67,6 +71,15 @@ ax.pie(sizes, labels=labels, autopct='%1.1f%%')
 #plt.show()
 
 print("Resolved: ", len(DNS_Resolved))
+fig, ax = plt.subplots()
+ax.pie(sizes, labels=labels, autopct='%1.1f%%')
+#plt.savefig('graph1.png', bbox_inches='tight')
+#plt.show()
+
+print("Resolved: ", len(DNS_Resolved))
+print("A:",countA)
+print("AAAA: ",countAAAA)
+print("Resolved: ", len(DNS_ResolvedTime))
 print(DNS_Resolved)
 print(DNS_RequestsType)
 print(QUIC_Versions)
