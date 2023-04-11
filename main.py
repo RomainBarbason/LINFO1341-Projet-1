@@ -9,11 +9,9 @@ QUIC_Versions = {}
 tempDNS = []
 TransportProtocolType = {"UDP": 0, "TCP": 0}
 tempTransport = []
-countA = 0
-countAAAA = 0
-TransportProtocolType = {"UDP": 0, "TCP": 0}
-tempTransport = []
-
+addRecord = 0
+DNS_Rcode = 0
+DNS_authoritative_server = 0
 dirc = "Packets/Edurom"
 
 for filename in os.listdir(dirc):
@@ -25,7 +23,10 @@ for filename in os.listdir(dirc):
         i = 1
         for packet in cap:
             if 'DNS' in packet:
+                addRecord += int(packet.dns.count_add_rr)
                 if str(packet.dns.flags) == "0x8180":
+                    DNS_Rcode += int(packet.dns.flags_rcode)
+                    DNS_authoritative_server += int(packet.dns.flags_authoritative)
                     DNS_ResolvedTime.append(packet.frame_info.time_relative) # (y a aussi time_epoch et time)
                     if str(packet.dns.qry_name) not in DNS_Resolved:
                         DNS_Resolved.append(str(packet.dns.qry_name))
@@ -48,7 +49,6 @@ for filename in os.listdir(dirc):
             if 'UDP' in packet:
                 TransportProtocolType.update({'UDP': TransportProtocolType.get('UDP') + 1})
             if 'TCP' in packet:
-                print(packet)
                 TransportProtocolType.update({'TCP': TransportProtocolType.get('TCP') + 1})
             i += 1
 
@@ -76,9 +76,14 @@ ax.pie(sizes, labels=labels, autopct='%1.1f%%')
 #plt.savefig('graph1.png', bbox_inches='tight')
 #plt.show()
 
+print("######################### Valeur retrounée ########################\n\n")
+
+print("Additional records :", addRecord)
+print("DNS Error Code :", DNS_Rcode)
+print("DNS Authoritative Server : ", DNS_authoritative_server)
 print("Resolved: ", len(DNS_Resolved))
-print("A:",countA)
-print("AAAA: ",countAAAA)
+print("A:", DNS_RequestsType.get(1))
+print("AAAA: ", DNS_RequestsType.get(28))
 print("Resolved: ", len(DNS_ResolvedTime))
 print(DNS_Resolved)
 print(DNS_RequestsType)
